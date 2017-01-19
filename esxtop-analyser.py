@@ -3,6 +3,7 @@
 file_header                = "esxtop-data.csv"          # all esxtop counters are located in this header (first line)
 file_data                  = "esxtop-data.csv"          # comma separated values of esxtop performance data
 file_counters_to_analyse   = "" # one esxtop counter per line 
+file_counters_to_analyse   = "counters.physical-disks.avg-kernel-latency.conf" # one esxtop counter per line 
 print_value_greater_then   = 0                          # print filter for interactive data anlysis
 dictionary_header          = {}                         # all counters from the header with field position
 array_counters_to_analyse  = []                         # all counters for analysis
@@ -22,10 +23,15 @@ def getEsxTopHeader(filename):
 
 # Read and parse esxtop data for analysis
 def getEsxTopDataForAnalysis(filename):
+    global file_header
+    global file_data
     global array_datalines_to_analyse
     f = open(filename, 'r')
     i = 1
     for line in f:
+        if (file_header == file_data) and (i == 1): # ignore the first line if it is the header
+            i += 1
+            continue
         parts = line.split(",")
         newline = parts[0]
         for counter in array_counters_to_analyse:
@@ -81,7 +87,7 @@ def getCountersForAnalysis(filename):
             counter = line.rstrip('\n');
             array_counters_to_analyse.append(counter)
     except: # catch *all* exceptions
-        print "Cannot read counter for analysis"
+        print "Cannot read counters for analysis"
 
 # Print esxtop header
 def printEsxTopHeader():
@@ -131,17 +137,17 @@ def getEsxTop():
     global file_header
     global file_data
     global file_counters_to_analyse
+    getEsxTopHeader(file_header)
+    getCountersForAnalysis(file_counters_to_analyse)
+    getEsxTopDataForAnalysis(file_data)
 
 # MAIN CODE
 print "ESXTOP Analyzer"
 print "---------------"
-getEsxTopHeader(file_header)
-getCountersForAnalysis(file_counters_to_analyse)
-getEsxTopDataForAnalysis(file_data)
-
+getEsxTop()
 
 #printEsxTopHeader()
 #printCountersForAnalysis()
-printEsxTopBundleStats()
-#printEsxTopDataForAnalysis()
+#printEsxTopBundleStats()
+printEsxTopDataForAnalysis()
 #analyseData()
