@@ -1,19 +1,12 @@
 #!/usr/bin/python
 
-file_header                = "header.csv" # all esxtop counters are located in this header (first line)
-file_header                = "sample-esxtop-data.csv" # all esxtop counters are located in this header (first line)
-file_data                  = "perfdata.esxtop.02_40"   # comma separated values of esxtop performance data
-file_data                  = "perfdata.esxtop.06_10"   # comma separated values of esxtop performance data
-file_data                  = "perfdata.esxtop.09_20"   # comma separated values of esxtop performance data
-file_data                  = "perfdata.esxtop.01_00-02_00"   # comma separated values of esxtop performance data
-file_data                  = "sample-esxtop-data.csv"   # comma separated values of esxtop performance data
-file_counters_to_analyse   = "counters_to_analyse_Queued_Commands.conf" # one esxtop counter per line 
+file_header                = "esxtop-data.csv"          # all esxtop counters are located in this header (first line)
+file_data                  = "esxtop-data.csv"          # comma separated values of esxtop performance data
 file_counters_to_analyse   = "" # one esxtop counter per line 
-#file_counters_to_analyse   = "counters_to_analyse_Avg_Kernel_latency.conf" # one esxtop counter per line 
-print_value_greater_then   = 0
-dictionary_header          = {} # all counters from the header with field position
-array_counters_to_analyse  = [] # all counters for analysis
-array_datalines_to_analyse = [] # esxtop data lines for analysis
+print_value_greater_then   = 0                          # print filter for interactive data anlysis
+dictionary_header          = {}                         # all counters from the header with field position
+array_counters_to_analyse  = []                         # all counters for analysis
+array_datalines_to_analyse = []                         # esxtop data lines for analysis
 
 # Read and parse esxtop header
 def getEsxTopHeader(filename):
@@ -123,6 +116,10 @@ def printEsxTopBundleStats():
     # Start time
     line = array_datalines_to_analyse[0]
     parts = line.split(",")
+    s = parts[0]
+    if s[1:2] == '(': # This is the header therefore get time from next line
+        line = array_datalines_to_analyse[1]
+        parts = line.split(",")
     print '{0:40s} : {1:20s}'.format('Start time',parts[0])
     # End  time
     line = array_datalines_to_analyse[len(array_datalines_to_analyse)-1]
